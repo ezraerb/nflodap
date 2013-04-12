@@ -1,0 +1,96 @@
+This file describes NFLODAP, an On-Line Analytics Processing program for NFL plays. It creates various graphs of historic play data given the teams and the conditions of the wanted plays. Various grouping (pivot) and selection (slice) operations are available.
+
+Copyright (C) 2013   Ezra Erb
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License version 3 as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+I'd appreciate a note if you find this program useful or make updates. Please contact me through LinkedIn or github (my profile also has a link to the code depository)
+
+This program does ODAP analysis on situation based NFL play calling. Offensive play calling depends on the situation faced by the team, often called "situational football". The significant factors influencing calls were statistically analyzed in this paper:
+ http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2861879/ 
+
+The results will be familiar to NFL fans:
+1.	Down
+2.	Distance needed
+3.	Location on field: within 10 yards of OWN end zone, within 10 yards of other end zone, middle (results showed no bias outside the red zones).
+4.	Whether a team is in the two minute drill or not (after the two minute warning in either half)
+5.	Score differential: down more than 14 points, down 14 to 7 points, down 7 or less, even, up 7 or less, up 7 to 14 points, up over 14 points
+These categories are used to build a classic information gain ratio based decision tree.
+
+All NFL game statistical analysis faces the severe problem of lack of data. Teams do not play each other often enough, with enough plays per game, to generate enough data for meaningful situational statistics. Real NFL teams solve this issue through a subset of the coaching staff called the Quality Control Department. 
+
+Any NFL team can request film on any NFL game. Quality Control decides which film is worthy of study for a given upcomming game, and breaks the film into individual plays. In general, past games against a given opponent are analyzed, along with their team against similiar opponents, and teams similar to them against their next opponent. This provides a much wider range of data, at the cost of possible meaningless outlyers.
+
+This program takes a similar approach. To run it, specify the team and its opponent, along with similar teams to both. Selection of the similar teams is one of the deep arts of football coaching and can't be automated.
+
+WARNING: This software's output has big limitations compared to real coaching. NFL coaches dynamically update their playcalling based on past results within a game, which this code does not handle. It also does not handle the detailed analysis of particular players as they move from team to team done by most Quality Control departments.
+
+This code was written for Windows, but should work with minor edits (file name conventions and the like) on other platforms.
+
+Play data may be pivoted and sliced based on any of the categories listed above. In additon, they may also be sliced by specifying integer ranges for different situation types. The results may be graphed by scatter plots by situation types (with turnovers optionally marked), bar charts of distance results, or couts of positive and negative plays. The program is designed to easily add new types of graphs.
+
+The program may be run by either specifying all wanted operations on the command line, or by using a GUI. To use the GUI, run without arguments. When used by the command line, the program generates a single graph from the conditions. 
+
+For the command line, the first three arguments are the offense, the defense, and the graph type. Options are specified afterward. 
+The graph type must be one of:
+    COUNTS - bar graph of counts of positive plays, negative plays, and turnovers
+    DISTANCE_RESULTS - bar graph of distanes achieved and turnover count
+    SCATTER_PLOT - scatter plot of plays based on situation types. The next two
+                   arguments must be the types, from the numeric situation types list below
+    TURNOVER_SCATTER_PLOT - same graph as SCATTER_PLOT, except turnovers are 
+                            marked in red
+
+The numeric situation type fields are: DISTANCE_NEEDED, FIELD_LOCATION,
+   TIME_REMAINING, SCORE_DIFFERENTIAL, and DISTANCE_GAINED
+
+Command line options consist of an option flag and required arguments. Flags
+that take situation fields may be duplicated with different fields. All other
+flags may only be specified once. Option flags are:
+   -u Teams to consider similiar to the offense, seperated by spaces. Including
+      either the offense or defense in this list is an error
+   -o Teams to consider similiar to the defense, seperated by spaces. Including
+      either the offense or defense in this list is an error
+   -p Play categories to use for grouping plays (pivoting), from the list of
+      play categories below. Switch takes one or two arguments, for a one or
+      two dimensional pivot
+   -c Play category to use to select plays (slicing), from the list of play
+      categories below. Second value must be the category value to use, as
+      listed below.
+   -i Numeric selecton of plays (slicing). Arguments are a numeric play
+      category from the list above followed by the range. Note that the list of
+      numeric play categories is a subset of all categories.
+
+Play categories, and the valid category values for each. They are based on the
+categories from the paper:
+DOWN_NUMBER
+        Values: FIRST_DOWN, SECOND_DOWN, THIRD_DOWN, FOURTH_DOWN
+DISTANCE_NEEDED
+        Values: OVER_TWENTY, TWENTY_TO_TEN, TEN_TO_FOUR, FOUR_TO_ONE, 
+                ONE_OR_LESS
+FIELD_LOCATION
+        Values: OWN_RED_ZONE, MIDDLE, OPP_RED_ZONE
+TIME_REMAINING
+        Values: OUTSIDE_TWO_MINUTES, INSIDE_TWO_MINUTES
+SCORE_DIFFERENTIAL
+        Values: DOWN_OVER_FOURTEEN, DOWN_OVER_SEVEN, DOWN_SEVEN_LESS, 
+                EVEN_SCORE, UP_SEVEN_LESS, UP_OVER_SEVEN, UP_OVER_FOURTEEN
+PLAY_TYPE
+        Values: RUN_LEFT, RUN_MIDDLE, RUN_RIGHT, PASS_SHORT_RIGHT, 
+                PASS_SHORT_MIDDLE, PASS_SHORT_LEFT, PASS_DEEP_RIGHT, 
+                PASS_DEEP_MIDDLE, PASS_DEEP_LEFT, FIELD_GOAL, PUNT
+
+Installation instructions:
+1. Create a directory.
+2. Create the subdirectory 'Data'
+3. Download files and subdirectories to this directory. First subdirectory
+   must be 'nflodap'
+4. Compile files with 'javac nflodap/NFLODAP'
+5. Download play data from this website to the Data directory:
+http://www.advancednflstats.com/2010/04/play-by-play-data.html
+6. Rename 2012_nfl_pbp_data_reg_season.csv to 2012_nfl_pbp_data.csv
+7. Either add nflodap to the classpath or run it specifying the path name. No
+   arguments brings up the GUI, otherwise specify arguments as listed above.
