@@ -88,7 +88,7 @@ Installation instructions:
 2. Create the subdirectory 'Data'
 3. Download files and subdirectories to this directory. First subdirectory
    must be 'nflodap'
-4. Compile files with 'javac nflodap/NFLODAP'
+4. Compile files with 'javac nflodap/NFLODAP.java'
 5. Download play data from this website to the Data directory:
 http://www.advancednflstats.com/2010/04/play-by-play-data.html
 6. Rename 2012_nfl_pbp_data_reg_season.csv to 2012_nfl_pbp_data.csv
