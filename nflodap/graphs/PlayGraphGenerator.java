@@ -34,7 +34,7 @@ import nflodap.datastore.*;
 public final class PlayGraphGenerator
 {
     // Size of overall window
-    private static Dimension _size = new Dimension(700, 700);
+    private static Dimension _size = new Dimension(1100, 700);
 
     // Singleton to hold count of windows generated
     private static Integer _windowCount = null;
@@ -484,9 +484,15 @@ public final class PlayGraphGenerator
        happen in practice, so this is acceptable */
     private void displayWindow()
     {
-        // If a graph pane exists, insert it into the window before display
-        if (_graphPane != null)
-            _window.getContentPane().add(_graphPane, BorderLayout.CENTER);
+        /* If a graph pane exists, insert it into the window before display.
+           Insert it within a scroll pane in case its too big for the
+           screen */
+        if (_graphPane != null) {
+            JScrollPane scrollPane = new JScrollPane(_graphPane);
+            // Set the scroll size to the wanted overall size
+            _window.setPreferredSize(_size);
+            _window.getContentPane().add(scrollPane, BorderLayout.CENTER);
+        }
         _window.pack();
         new JFrameThreadWrapper(_window, getWindowCount());
         clearGraphWindowData();
@@ -665,8 +671,8 @@ public final class PlayGraphGenerator
                            SinglePlay.DownNumber.class, null,
                            new String("Very long test string to make the code scream 2"));
         test.generateGraph(new PlayResultsFactory(),
-                           SinglePlay.DownNumber.class,
-                           SinglePlay.FieldLocation.class, null,
+                           SinglePlay.PlayType.class,
+                           SinglePlay.DownNumber.class, null,
                            new String("Very long test string to make the code scream 3"));
     }
 }
